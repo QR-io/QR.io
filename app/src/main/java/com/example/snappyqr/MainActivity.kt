@@ -13,8 +13,8 @@ import android.provider.Settings
 import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.vision.barcode.Barcode
-import com.google.android.gms.vision.barcode.BarcodeDetector
+//import com.google.android.gms.vision.barcode.Barcode
+//import com.google.android.gms.vision.barcode.BarcodeDetector
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,8 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         askForPermissions()
 
-        val send_button = findViewById<Button>(R.id.send_button)
-        send_button.setOnClickListener{
+        findViewById<Button>(R.id.send_button).setOnClickListener{
             val intent = Intent(this, PickerActivity::class.java)
             startActivity(intent)
         }
@@ -38,9 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     // permission handling code taken with credit to https://handyopinion.com/ask-runtime-permission-in-kotlin-android/
     fun isPermissionsAllowed(): Boolean {
-        return if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            false
-        } else true
+        return ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
     }
 
     fun askForPermissions(): Boolean {
