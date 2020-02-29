@@ -21,7 +21,8 @@ class MainActivity : AppCompatActivity() {
 
         val receive_button = findViewById<Button>(R.id.receive_button)
         receive_button.setOnClickListener{
-            println("Received")
+            val intent = Intent(this, RecvActivity::class.java)
+            startActivity(intent)
         }
 
     }
