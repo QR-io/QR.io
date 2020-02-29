@@ -1,57 +1,32 @@
 package com.example.snappyqr
 
-import android.Manifest
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Size
-import android.view.ViewGroup
-import androidx.camera.core.CameraX
-import androidx.camera.core.Preview
-import androidx.camera.core.PreviewConfig
-import com.example.snappyqr.Routines
-import kotlinx.android.synthetic.main.activity_recv.*
+import android.util.Log
+import android.view.TextureView
+import com.google.android.gms.vision.Frame
+import com.google.android.gms.vision.barcode.Barcode
+import com.google.android.gms.vision.barcode.BarcodeDetector
 
 class RecvActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val bcd = BarcodeDetector.Builder(applicationContext)
+            .setBarcodeFormats(Barcode.QR_CODE).build()
+
         setContentView(R.layout.activity_recv)
-        demo()
+
+        Routines.setupCamViewer(this,findViewById(R.id.textureView))
     }
 
-    fun demo() {
-        // modified example code from https://codelabs.developers.google.com/codelabs/camerax-getting-started/
-
-        // Create configuration object for the viewfinder use case
-        val previewConfig = PreviewConfig.Builder().apply {
-
-            setTargetResolution(Size(640, 480))
-        }.build()
-
-
-        // Build the viewfinder use case
-        val preview = Preview(previewConfig)
-
-        // Every time the viewfinder is updated, recompute layout
-        preview.setOnPreviewOutputUpdateListener {
-
-            // To update the SurfaceTexture, we have to remove it and re-add it
-            val parent = textureView.parent as ViewGroup
-            parent.removeView(textureView)
-            parent.addView(textureView, 0)
-
-            textureView.surfaceTexture = it.surfaceTexture
-            //updateTransform()
-        }
-
-        // Bind use cases to lifecycle
-        // If Android Studio complains about "this" being not a LifecycleOwner
-        // try rebuilding the project or updating the appcompat dependency to
-        // version 1.1.0 or higher.
-        CameraX.bindToLifecycle(this, preview)
-    }
-
+/*
+ {
+                val f = Frame.Builder().setBitmap(it.bitmap).build()
+                val qr = bcd.detect(f)
+                Log.v("SnappyQR","found " + qr.size() + " codes")
+ }
+ */
 
 }

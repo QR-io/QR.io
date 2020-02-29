@@ -42,7 +42,8 @@ dependencies {
 
     // required for BarcodeReader
     //implementation 'com.android.support:appcompat-v7:22.0.0'
-    implementation 'com.google.android.gms:play-services:7.8+'
+    //implementation 'com.google.android.gms:play-services:7.8+'
+    implementation 'com.google.android.gms:play-services-vision:9.4.0+'
 
     // Use the most recent version of CameraX, currently that is alpha06.
     def camerax_version = '1.0.0-alpha06'
