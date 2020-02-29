@@ -20,5 +20,6 @@
         </activity>
         <activity android:name=".PickerActivity" android:screenOrientation="portrait"></activity>
     </application>
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
 
 </manifest>

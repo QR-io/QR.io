@@ -12,7 +12,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val bcd = BarcodeDetector.Builder(applicationContext).setBarcodeFormats(Barcode.QR_CODE)
 
         val send_button = findViewById<Button>(R.id.send_button)
         send_button.setOnClickListener{
