@@ -40,13 +40,13 @@ class MainActivity : AppCompatActivity() {
 
 
     // permission handling code taken with credit to https://handyopinion.com/ask-runtime-permission-in-kotlin-android/
-    fun isPermissionsAllowed(perm:String): Boolean {
+    private fun isPermissionsAllowed(perm:String): Boolean {
         return ContextCompat.checkSelfPermission(this,perm) == PackageManager.PERMISSION_GRANTED
     }
 
     private val REQUEST_CODE = 8
 
-    fun askForPermissions(perm:String): Boolean {
+    private fun askForPermissions(perm:String): Boolean {
         if (!isPermissionsAllowed(perm)) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this as Activity,perm)) {
                 showPermissionDeniedDialog()
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         disableButtons()
     }
 
-    fun disableButtons() {
+    private fun disableButtons() {
         val toastRestart = {v: View ->
             Toast.makeText(applicationContext, "Please grant the app permissions in settings and restart the app.",
                 Toast.LENGTH_LONG).show()
