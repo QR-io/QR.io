@@ -19,5 +19,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, PickerActivity::class.java)
             startActivity(intent)
         }
+
+        val receive_button = findViewById<Button>(R.id.receive_button)
+        receive_button.setOnClickListener{
+            println("Received")
+        }
+
     }
 }
