@@ -16,7 +16,8 @@ class PickerActivity : AppCompatActivity() {
 
     }
     fun showFileChooser(){
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select a File"), 0);
 
     }
 }
