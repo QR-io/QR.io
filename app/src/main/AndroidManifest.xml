@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.snappyqr">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,6 +21,5 @@
         </activity>
         <activity android:name=".PickerActivity" android:screenOrientation="portrait"></activity>
     </application>
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
 
 </manifest>
