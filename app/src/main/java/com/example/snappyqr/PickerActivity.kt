@@ -25,7 +25,7 @@ class PickerActivity : AppCompatActivity() {
         val chooseFileButton = findViewById<Button>(R.id.choose_file_button)
         chooseFileButton.setOnClickListener{
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.type = "file/*";
+            intent.type = "*/*";
             startActivityForResult(intent, PICKER_REQUEST_CODE)
         }
     }
