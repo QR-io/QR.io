@@ -25,13 +25,6 @@ class MainActivity : AppCompatActivity() {
         askForPermissions(Manifest.permission.CAMERA)
         askForPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 
-        findViewById<Button>(R.id.send_button).setOnClickListener{
-            val intent = Intent(this, PickerActivity::class.java)
-            startActivity(intent)
-        }
-        findViewById<Button>(R.id.receive_button).setOnClickListener{
-            startActivity(Intent(this, RecvActivity::class.java))
-        }
     }
 
     val REQUEST_CODE = 77
@@ -58,9 +51,19 @@ class MainActivity : AppCompatActivity() {
             REQUEST_CODE -> {
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission is granted, you can perform your operation here
+                    findViewById<Button>(R.id.send_button).setOnClickListener{
+                        startActivity(Intent(this, PickerActivity::class.java))
+                    }
+                    findViewById<Button>(R.id.receive_button).setOnClickListener{
+                        startActivity(Intent(this, RecvActivity::class.java))
+                    }
                 } else {
                     // permission is denied, you can ask for permission again, if you want
-                    //  askForPermissions()
+                    for(perm in permissions){
+                        if (!isPermissionsAllowed(perm)){
+                            askForPermissions(perm)
+                        }
+                    }
                 }
                 return
             }
