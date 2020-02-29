@@ -22,7 +22,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        askForPermissions()
+        askForPermissions(Manifest.permission.CAMERA)
+        askForPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 
         findViewById<Button>(R.id.send_button).setOnClickListener{
             val intent = Intent(this, PickerActivity::class.java)
@@ -36,16 +37,16 @@ class MainActivity : AppCompatActivity() {
     val REQUEST_CODE = 77
 
     // permission handling code taken with credit to https://handyopinion.com/ask-runtime-permission-in-kotlin-android/
-    fun isPermissionsAllowed(): Boolean {
-        return ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+    fun isPermissionsAllowed(perm:String): Boolean {
+        return ContextCompat.checkSelfPermission(this,perm) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun askForPermissions(): Boolean {
-        if (!isPermissionsAllowed()) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this as Activity,Manifest.permission.CAMERA)) {
+    fun askForPermissions(perm:String): Boolean {
+        if (!isPermissionsAllowed(perm)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this as Activity,perm)) {
                 showPermissionDeniedDialog()
             } else {
-                ActivityCompat.requestPermissions(this as Activity,arrayOf(Manifest.permission.CAMERA),REQUEST_CODE)
+                ActivityCompat.requestPermissions(this as Activity,arrayOf(perm),REQUEST_CODE)
             }
             return false
         }
