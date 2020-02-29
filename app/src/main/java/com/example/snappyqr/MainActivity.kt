@@ -1,7 +1,9 @@
 package com.example.snappyqr
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 
@@ -11,5 +13,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val bcd = BarcodeDetector.Builder(applicationContext).setBarcodeFormats(Barcode.QR_CODE)
+
+        val send_button = findViewById<Button>(R.id.send_button)
+        send_button.setOnClickListener{
+            val intent = Intent(this, PickerActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
