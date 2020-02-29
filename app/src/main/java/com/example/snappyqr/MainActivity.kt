@@ -37,15 +37,15 @@ class MainActivity : AppCompatActivity() {
 
     // permission handling code taken with credit to https://handyopinion.com/ask-runtime-permission-in-kotlin-android/
     fun isPermissionsAllowed(): Boolean {
-        return ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
     }
 
     fun askForPermissions(): Boolean {
         if (!isPermissionsAllowed()) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this as Activity,Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this as Activity,Manifest.permission.CAMERA)) {
                 showPermissionDeniedDialog()
             } else {
-                ActivityCompat.requestPermissions(this as Activity,arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),REQUEST_CODE)
+                ActivityCompat.requestPermissions(this as Activity,arrayOf(Manifest.permission.CAMERA),REQUEST_CODE)
             }
             return false
         }
