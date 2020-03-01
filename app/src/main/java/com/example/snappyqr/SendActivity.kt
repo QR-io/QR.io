@@ -3,15 +3,11 @@ package com.example.snappyqr
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.os.FileUtils
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
-import androidx.core.text.parseAsHtml
-import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -20,6 +16,8 @@ import java.util.concurrent.TimeUnit
 class SendActivity : AppCompatActivity() {
 
     val fakeData : ByteArray = ByteArray(1000)
+
+    var handler:Handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -45,12 +43,14 @@ class SendActivity : AppCompatActivity() {
         val flashqrs : () -> Unit = {
             counter+=1
             counter = counter.rem(data.size/10 + 1)
-            myImage.setImageBitmap(Routines.getNthQRCode(counter,data,10))
-            //Log.w("SnappyQR","Thread running.")
+            val qr = Routines.getNthQRCode(counter,data,10)
+            handler.post {
+                myImage.setImageBitmap(qr)
+            }
         }
         Log.d("DATASIZE", data.size.toString())
         val exec = Executors.newSingleThreadScheduledExecutor()
-        exec.scheduleAtFixedRate(flashqrs,100,100, TimeUnit.MILLISECONDS)
+        exec.scheduleAtFixedRate(flashqrs,100,64, TimeUnit.MILLISECONDS)
         //exec.
 
     }
