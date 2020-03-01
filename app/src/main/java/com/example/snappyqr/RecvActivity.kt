@@ -19,9 +19,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.Executor
 
 
 class RecvActivity : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,6 +52,8 @@ class RecvActivity : AppCompatActivity() {
 
         var dataMap = TreeMap<Int,ByteArray>()
 
+        val executor : Executor
+
         val analyzer = ImageAnalysis.Analyzer { imageProxy: ImageProxy, i: Int ->
             val bitmap = imageProxy.toBitmap()
             //TODO(There may end up being more than 1 QR spotted. Write logic to grab the correct one.)
@@ -62,10 +66,10 @@ class RecvActivity : AppCompatActivity() {
                     Log.d("SnappyQR",frame)
                     var data = frame.split(",")
 
-                    if (data.size<3) {
+                    /*if (data.size<3) {
                         // this frame is corrupt. skipping.
                         continue
-                    }
+                    }*/
 
                     var frameIndex = data[0].trim()
                     var dataLength = data[1].trim()
@@ -74,22 +78,22 @@ class RecvActivity : AppCompatActivity() {
                         byteData = byteData + data[x]
                     }
 
-                   if (byteData.length < 100 && frameIndex.toInt()!=dataLength.toInt()-1) {
+                   /*if (byteData.length < 100 && frameIndex.toInt()!=dataLength.toInt()-1) {
                         // QR code is truncated.
                         // This seems to be a regular failure mode, where it doesn't read the
                         // entire QR code.
                         continue
-                    }
+                    }*/
 
                     Log.d("INDEX", frameIndex)
                     Log.d("LENGTH", dataLength)
                     Log.d("DATA", byteData)
-                    Log.d("FRAMES_I_HAVE", "$dataMap.lastKey()")
+                    var size = dataMap.size
+                    Log.d("FRAMES_I_HAVE", "$size")
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
 
-                    if (dataMap.lastKey()  == dataLength.toInt() - 1){
+                    if (dataMap.size == dataLength.toInt()){
                         makeFileFromByteArrays(dataMap)
-                        break
                     }
 
 //                    if (barcode != null) {
@@ -102,7 +106,7 @@ class RecvActivity : AppCompatActivity() {
             }
             //Log.v("SnappyQR",""+barcodes.size())
         }
-        Routines.setupCamAnalysis(this,analyzer)
+        executor = Routines.setupCamAnalysis(this,analyzer)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

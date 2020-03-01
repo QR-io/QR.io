@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.Executors
 import net.glxn.qrgen.android.QRCode
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.Executor
 
 
 class Routines {
@@ -49,7 +50,7 @@ class Routines {
             CameraX.bindToLifecycle(a, preview)
         }
 
-        fun setupCamAnalysis(a: LifecycleOwner, hook: ImageAnalysis.Analyzer) {
+        fun setupCamAnalysis(a: LifecycleOwner, hook: ImageAnalysis.Analyzer): Executor {
             val imageAnalysisConfig = ImageAnalysisConfig.Builder().apply {
                 setLensFacing(CameraX.LensFacing.FRONT)
                 setTargetResolution(Size(640, 480))
@@ -59,10 +60,13 @@ class Routines {
 
             var imageAnalysis = ImageAnalysis(imageAnalysisConfig)
 
+            val executor = Executors.newSingleThreadExecutor()
 
-            imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), hook)
+            imageAnalysis.setAnalyzer(executor, hook)
 
             CameraX.bindToLifecycle(a, imageAnalysis)
+
+            return executor
         }
 
         // fun fact, "min" requires api level 24.
