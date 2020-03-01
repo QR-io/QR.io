@@ -1,19 +1,13 @@
 package com.example.snappyqr
 
-import android.Manifest
-import android.app.Activity
-import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.util.Size
 import android.view.TextureView
 import android.view.ViewGroup
 import androidx.camera.core.*
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import kotlinx.android.synthetic.main.activity_recv.*
-import java.security.AccessController.getContext
+import java.util.concurrent.Executors
+import net.glxn.qrgen.android.QRCode
 
 
 class Routines {
@@ -50,7 +44,7 @@ class Routines {
             // version 1.1.0 or higher.
             CameraX.bindToLifecycle(a, preview)
         }
-        fun setupCamAnalysis(a : LifecycleOwner, hook:(j:Bitmap) -> Unit) {
+        fun setupCamAnalysis(a : LifecycleOwner, hook:ImageAnalysis.Analyzer) {
             val imageAnalysisConfig = ImageAnalysisConfig.Builder().apply {
                 setLensFacing(CameraX.LensFacing.FRONT)
                 setTargetResolution(Size(640, 480))
@@ -58,8 +52,24 @@ class Routines {
 
             var imageAnalysis = ImageAnalysis(imageAnalysisConfig)
 
-            // todo add hook
-            //imageAnalysis.setAnalyzer(hook)
+
+            imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(),hook)
+
+            CameraX.bindToLifecycle(a,imageAnalysis)
+        }
+
+        // fun fact, "min" requires api level 24.
+        // so we wrote our own.
+        fun min(a:Int,b:Int) : Int {
+            return if (a<b) a else b
+        }
+
+        fun getNthQRCode(n:Int, file:ByteArray, databytes:Int) : Bitmap {
+            //val databytes = 10
+            val dataString:String = String(file.sliceArray((n*databytes)..min((n+1)*databytes,file.size-1)))
+            // todo data headers
+            return QRCode.from(dataString).bitmap()
+
         }
     }
 }
