@@ -8,17 +8,17 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="249dp"
-        android:layout_height="231dp"
+        android:layout_width="356dp"
+        android:layout_height="429dp"
         android:layout_marginStart="151dp"
         android:layout_marginTop="311dp"
         android:layout_marginEnd="152dp"
         android:layout_marginBottom="312dp"
         android:contentDescription="QR code location."
+        android:keepScreenOn="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background"
-        android:keepScreenOn="true"/>
+        app:srcCompat="@drawable/ic_launcher_background" />
 </androidx.constraintlayout.widget.ConstraintLayout>
