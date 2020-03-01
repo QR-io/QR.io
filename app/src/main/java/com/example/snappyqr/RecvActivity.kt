@@ -59,8 +59,8 @@ class RecvActivity : AppCompatActivity() {
 
             if (barcodes.size() > 0) {
                 for (barcode in barcodes.valueIterator()){
-
                     var frame = barcode.rawValue
+                    Log.d("SnappyQR",frame)
                     var data = frame.split(",")
                     var frameIndex = data[0].trim()
                     var dataLength = data[1].trim()
@@ -69,9 +69,9 @@ class RecvActivity : AppCompatActivity() {
                         byteData = byteData + data[x]
                     }
 
-                    Log.d("INDEX", frameIndex)
+                    /*Log.d("INDEX", frameIndex)
                     Log.d("LENGTH", dataLength)
-                    Log.d("DATA", byteData)
+                    Log.d("DATA", byteData)*/
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
 
                     if (dataMap.lastKey()  == dataLength.toInt() - 1){

@@ -81,7 +81,7 @@ class Routines {
                     )
                 )
             )
-            val dataStringHeader = "$n,$totalFrames"
+            val dataStringHeader = "$n,$totalFrames,"
             dataString = dataStringHeader + dataString
 
             Log.d("nBYTES", dataStringHeader)
