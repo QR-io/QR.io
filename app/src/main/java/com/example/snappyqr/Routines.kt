@@ -1,6 +1,7 @@
 package com.example.snappyqr
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.util.Size
 import android.view.TextureView
 import android.view.ViewGroup
@@ -64,12 +65,24 @@ class Routines {
             return if (a<b) a else b
         }
 
-        fun getNthQRCode(n:Int, file:ByteArray, databytes:Int) : Bitmap {
+        fun getNthQRCode(n:Int, file:ByteArray, databytes:Int, totalFrames: Int) : Bitmap {
             //val databytes = 10
-            val dataString:String = String(file.sliceArray((n*databytes)..min((n+1)*databytes,file.size-1)))
-            // todo data headers
+            var dataString:String = String(file.sliceArray((n*databytes)..min((n+1)*databytes-1,file.size-1)))
+            val dataStringHeader = String(longToUInt32ByteArray(n)) + String(longToUInt32ByteArray(totalFrames))
+            dataString = dataStringHeader + dataString
+
+            Log.d("nBYTES", dataStringHeader)
             return QRCode.from(dataString).bitmap()
 
         }
+        fun longToUInt32ByteArray(value: Int): ByteArray {
+            val bytes = ByteArray(4)
+            bytes[3] = (value and 0xFFFF).toByte()
+            bytes[2] = ((value ushr 8) and 0xFFFF).toByte()
+            bytes[1] = ((value ushr 16) and 0xFFFF).toByte()
+            bytes[0] = ((value ushr 24) and 0xFFFF).toByte()
+            return bytes
+        }
     }
+
 }
