@@ -91,6 +91,7 @@ class RecvActivity : AppCompatActivity() {
         Routines.setupCamAnalysis(this,analyzer)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun makeFileFromByteArrays(data: TreeMap<Int, ByteArray>) {
         //TODO Send 100 in the intent. This number is BytesPerQR in SendActivity.
         var fos: FileOutputStream? = null
@@ -110,6 +111,7 @@ class RecvActivity : AppCompatActivity() {
             Log.d("FINALLY", "Finally closing.")
             fos?.flush()
             fos?.close()
+            vibrateWhenDone()
             intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
