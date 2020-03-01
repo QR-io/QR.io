@@ -70,7 +70,6 @@ class PickerActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
     fun copyToTempFile(uri: Uri, tempFile: OutputStream): OutputStream {
         // Obtain an input stream from the uri
-        // Obtain an input stream from the uri
         val inputStream = contentResolver.openInputStream(uri)
             ?: throw IOException("Unable to obtain input stream from URI")
 

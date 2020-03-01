@@ -48,7 +48,8 @@ class Routines {
             // version 1.1.0 or higher.
             CameraX.bindToLifecycle(a, preview)
         }
-        fun setupCamAnalysis(a : LifecycleOwner, hook:ImageAnalysis.Analyzer) {
+
+        fun setupCamAnalysis(a: LifecycleOwner, hook: ImageAnalysis.Analyzer) {
             val imageAnalysisConfig = ImageAnalysisConfig.Builder().apply {
                 setLensFacing(CameraX.LensFacing.FRONT)
                 setTargetResolution(Size(640, 480))
@@ -59,24 +60,35 @@ class Routines {
             var imageAnalysis = ImageAnalysis(imageAnalysisConfig)
 
 
-            imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(),hook)
+            imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), hook)
 
-            CameraX.bindToLifecycle(a,imageAnalysis)
+            CameraX.bindToLifecycle(a, imageAnalysis)
         }
 
         // fun fact, "min" requires api level 24.
         // so we wrote our own.
-        fun min(a:Int,b:Int) : Int {
-            return if (a<b) a else b
+        fun min(a: Int, b: Int): Int {
+            return if (a < b) a else b
         }
 
-        fun getNthQRCode(n:Int, file:ByteArray, databytes:Int, totalFrames: Int) : Bitmap {
+        fun getNthQRCode(n: Int, file: ByteArray, databytes: Int, totalFrames: Int): Bitmap {
             //val databytes = 10
-            var dataString:String = String(file.sliceArray((n*databytes)..min((n+1)*databytes-1,file.size-1)))
-            val dataStringHeader = String(longToUInt32ByteArray(n)) + String(longToUInt32ByteArray(totalFrames))
+            var dataString: String = String(
+                file.sliceArray(
+                    (n * databytes)..min(
+                        (n + 1) * databytes - 1,
+                        file.size - 1
+                    )
+                )
+            )
+//            val dataStringHeader =
+//                String(longToUInt32ByteArray(n)) + String(longToUInt32ByteArray(totalFrames))
+//            dataString = dataStringHeader + dataString
+
+            val dataStringHeader = "$n, $totalFrames, "
             dataString = dataStringHeader + dataString
 
-            Log.d("nBYTES", dataStringHeader)
+//            Log.d("DATA", dataString)
             return QRCode.from(dataString).bitmap()
 
         }
@@ -104,15 +116,14 @@ class Routines {
             val imageBytes = out.toByteArray()
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
-        fun longToUInt32ByteArray(value: Int): ByteArray {
-            val bytes = ByteArray(4)
-            bytes[3] = (value and 0xFFFF).toByte()
-            bytes[2] = ((value ushr 8) and 0xFFFF).toByte()
-            bytes[1] = ((value ushr 16) and 0xFFFF).toByte()
-            bytes[0] = ((value ushr 24) and 0xFFFF).toByte()
-            return bytes
-
         }
+            private fun longToUInt32ByteArray(value: Int): ByteArray {
+                val bytes = ByteArray(4)
+                bytes[3] = (value and 0xFFFF).toByte()
+                bytes[2] = ((value ushr 8) and 0xFFFF).toByte()
+                bytes[1] = ((value ushr 16) and 0xFFFF).toByte()
+                bytes[0] = ((value ushr 24) and 0xFFFF).toByte()
+                return bytes
+            }
     }
-
 }
