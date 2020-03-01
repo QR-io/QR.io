@@ -62,6 +62,12 @@ class RecvActivity : AppCompatActivity() {
                     var frame = barcode.rawValue
                     Log.d("SnappyQR",frame)
                     var data = frame.split(",")
+
+                    if (data.size<3) {
+                        // this frame is corrupt. skipping.
+                        continue
+                    }
+
                     var frameIndex = data[0].trim()
                     var dataLength = data[1].trim()
                     var byteData = data[2]
@@ -69,9 +75,17 @@ class RecvActivity : AppCompatActivity() {
                         byteData = byteData + data[x]
                     }
 
-                    /*Log.d("INDEX", frameIndex)
+                   if (byteData.length < 100 && frameIndex.toInt()!=dataLength.toInt()-1) {
+                        // QR code is truncated.
+                        // This seems to be a regular failure mode, where it doesn't read the
+                        // entire QR code.
+                        continue
+                    }
+
+                    Log.d("INDEX", frameIndex)
                     Log.d("LENGTH", dataLength)
-                    Log.d("DATA", byteData)*/
+                    Log.d("DATA", byteData)
+                    Log.d("FRAMES_I_HAVE", "$dataMap.lastKey()")
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
 
                     if (dataMap.lastKey()  == dataLength.toInt() - 1){
