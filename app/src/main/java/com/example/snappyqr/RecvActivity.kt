@@ -2,11 +2,11 @@ package com.example.snappyqr
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import android.os.Environment
+import android.os.*
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -15,7 +15,6 @@ import com.example.snappyqr.Routines.Companion.toBitmap
 import com.google.android.gms.vision.Frame
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -106,6 +105,7 @@ class RecvActivity : AppCompatActivity() {
         Routines.setupCamAnalysis(this,analyzer)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun makeFileFromByteArrays(data: TreeMap<Int, ByteArray>) {
         //TODO Send 100 in the intent. This number is BytesPerQR in SendActivity.
         var fos: FileOutputStream? = null
@@ -125,6 +125,7 @@ class RecvActivity : AppCompatActivity() {
             Log.d("FINALLY", "Finally closing.")
             fos?.flush()
             fos?.close()
+            vibrateWhenDone()
             intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
@@ -151,6 +152,17 @@ class RecvActivity : AppCompatActivity() {
     fun isExternalStorageWritable(): Boolean {
         val state = Environment.getExternalStorageState()
         return Environment.MEDIA_MOUNTED == state
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun vibrateWhenDone(){
+        val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        // Vibrate for 500 milliseconds
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else { //deprecated in API 26
+            v.vibrate(VibrationEffect.createOneShot(500, 10))
+        }
     }
 
 }
