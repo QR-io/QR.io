@@ -71,7 +71,7 @@ class RecvActivity : AppCompatActivity() {
 //                    Log.d("DATA", byteData)
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
 
-                    if (dataMap.lastKey() + 1 == dataLength.toInt() - 1){
+                    if (dataMap.lastKey()  == dataLength.toInt() - 1){
                         makeFileFromByteArrays(dataMap)
                         break
                     }
@@ -95,12 +95,12 @@ class RecvActivity : AppCompatActivity() {
         val theFile = File(getExternalFilesDir(null),"THEFILE.txt")
         theFile.createNewFile()
         try {
-            fos = FileOutputStream(File(getExternalFilesDir(null),"THEFILE.txt"))
-            val baos = ByteArrayOutputStream()
+            fos = FileOutputStream(theFile)
+            //val baos = ByteArrayOutputStream()
             // Put data in your baos
             for (dataPiece in data.values) {
-                print(dataPiece)
-                baos.writeTo(fos)
+                //print(dataPiece)
+                fos.write(dataPiece)
             }
         } catch (ioe: IOException) { // Handle exception here
             ioe.printStackTrace()

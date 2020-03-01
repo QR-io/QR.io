@@ -42,7 +42,7 @@ class SendActivity : AppCompatActivity() {
         val myImage: ImageView = findViewById<View>(R.id.imageView) as ImageView
         val flashqrs : () -> Unit = {
             counter+=1
-            counter = counter.rem(data.size/bytesPerQR)
+            counter = counter.rem(kotlin.math.ceil(data.size/bytesPerQR.toDouble()).toInt() )
             val qr = Routines.getNthQRCode(counter,data,bytesPerQR,
                 kotlin.math.ceil(data.size / bytesPerQR.toDouble()).toInt())
             handler.post {

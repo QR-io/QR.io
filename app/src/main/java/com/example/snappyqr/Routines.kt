@@ -81,14 +81,11 @@ class Routines {
                     )
                 )
             )
-//            val dataStringHeader =
-//                String(longToUInt32ByteArray(n)) + String(longToUInt32ByteArray(totalFrames))
-//            dataString = dataStringHeader + dataString
-
-            val dataStringHeader = "$n, $totalFrames, "
+            val dataStringHeader =
+                String(longToUInt32ByteArray(n)) + String(longToUInt32ByteArray(totalFrames))
             dataString = dataStringHeader + dataString
 
-//            Log.d("DATA", dataString)
+            Log.d("nBYTES", dataStringHeader)
             return QRCode.from(dataString).bitmap()
 
         }
@@ -115,15 +112,17 @@ class Routines {
             yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 100, out)
             val imageBytes = out.toByteArray()
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        }
+
+        fun longToUInt32ByteArray(value: Int): ByteArray {
+            val bytes = ByteArray(4)
+            bytes[3] = (value and 0xFFFF).toByte()
+            bytes[2] = ((value ushr 8) and 0xFFFF).toByte()
+            bytes[1] = ((value ushr 16) and 0xFFFF).toByte()
+            bytes[0] = ((value ushr 24) and 0xFFFF).toByte()
+            return bytes
 
         }
-            private fun longToUInt32ByteArray(value: Int): ByteArray {
-                val bytes = ByteArray(4)
-                bytes[3] = (value and 0xFFFF).toByte()
-                bytes[2] = ((value ushr 8) and 0xFFFF).toByte()
-                bytes[1] = ((value ushr 16) and 0xFFFF).toByte()
-                bytes[0] = ((value ushr 24) and 0xFFFF).toByte()
-                return bytes
-            }
     }
+
 }
