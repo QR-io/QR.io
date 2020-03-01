@@ -64,11 +64,14 @@ class RecvActivity : AppCompatActivity() {
                     var data = frame.split(",")
                     var frameIndex = data[0].trim()
                     var dataLength = data[1].trim()
-                    var byteData = data[2].trim()
+                    var byteData = data[2]
+                    for (x in 3 until data.size) {
+                        byteData = byteData + data[x]
+                    }
 
-//                    Log.d("INDEX", frameIndex)
-//                    Log.d("LENGTH", dataLength)
-//                    Log.d("DATA", byteData)
+                    Log.d("INDEX", frameIndex)
+                    Log.d("LENGTH", dataLength)
+                    Log.d("DATA", byteData)
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
 
                     if (dataMap.lastKey()  == dataLength.toInt() - 1){
