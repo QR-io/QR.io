@@ -1,10 +1,18 @@
 package com.example.snappyqr
 
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
+import android.os.FileUtils
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
+import androidx.core.text.parseAsHtml
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -24,6 +32,8 @@ class SendActivity : AppCompatActivity() {
         val qr_string = intent.getStringExtra("qr_string")
         val uri = intent.getStringExtra("uri")
 
+        val data : ByteArray = readBytes(applicationContext, Uri.parse(uri))
+
         /*
         val myBitmap: Bitmap = QRCode.from(qr_string).bitmap()
         val myImage: ImageView = findViewById<View>(R.id.imageView) as ImageView
@@ -34,13 +44,17 @@ class SendActivity : AppCompatActivity() {
         val myImage: ImageView = findViewById<View>(R.id.imageView) as ImageView
         val flashqrs : () -> Unit = {
             counter+=1
-            counter = counter.rem(99)
-            myImage.setImageBitmap(Routines.getNthQRCode(counter,fakeData,5))
+            counter = counter.rem(data.size/10 + 1)
+            myImage.setImageBitmap(Routines.getNthQRCode(counter,data,10))
             //Log.w("SnappyQR","Thread running.")
         }
+        Log.d("DATASIZE", data.size.toString())
         val exec = Executors.newSingleThreadScheduledExecutor()
         exec.scheduleAtFixedRate(flashqrs,100,100, TimeUnit.MILLISECONDS)
         //exec.
 
     }
+    @Throws(IOException::class)
+    private fun readBytes(context: Context, uri: Uri): ByteArray =
+        context.contentResolver.openInputStream(uri)!!.buffered().use { it.readBytes() }
 }

@@ -41,10 +41,10 @@ class PickerActivity : AppCompatActivity() {
             return
         }
         val intent = Intent(Intent(this, SendActivity::class.java))
-        intent.putExtra("uri", data.toString())
+        intent.putExtra("uri", data?.data.toString())
         intent.putExtra("qr_string", "google.com")
         //More logging to see what is actually in data.
-//        Log.d("DATA", data.toString())
+//        Log.d("DATA", data?.data.toString())
         startActivity(intent)
     }
     @RequiresApi(Build.VERSION_CODES.Q)
