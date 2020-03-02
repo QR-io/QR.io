@@ -36,3 +36,7 @@ As QR.io is under development, there is only an Android app (in the repo) with o
   - [ ] Use bi-directional communication to discover fastest method of transfer
   - [ ] Drop frames that were successful so they are not looped again
   - [ ] Use raw pixel data for data transfer and use QR codes as an easy/fast way to talk
+
+## Contact
+
+Trevor Dobbertin - trevordobbertin@gmail.com
