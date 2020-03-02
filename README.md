@@ -39,6 +39,7 @@ As QR.io is under development, there is only an Android app (in the repo) with o
 
 ## Contact
 
-Trevor Dobbertin - trevordobbertin @gmail.com  
-Matas Lauzadis - matas.lauzadis @gmail.com  
-Dimitar Pendurkov - dimitarpendurkov @gmail.com  
+Trevor Dobbertin - trevordobbertin(@)gmail.com  
+Matas Lauzadis - matas.lauzadis(@)gmail.com  
+Dimitar Pendurkov - dimitarpendurkov(@)gmail.com  
+Tom Reichel - tom.p.reichel(@)gmail.com
