@@ -26,6 +26,9 @@ As QR.io is under development, there is only an Android app (in the repo) with o
 - [x] Turn a file into QR codes
 - [x] Turn those QR codes into readable files
 - [x] Create Android app to show off the technology
+- [ ] Add file type compatibility (Transmit filename) 
+- [ ] base64 encoded **or** ensure unicode works
+- [ ] Set headers to Byte data
 - [ ] Create an iOS app to show crosscompatability
 - [ ] Convert the app into an API for others to use in their projects
 - [ ] Enable bi-directional communication
