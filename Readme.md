@@ -20,3 +20,16 @@ As QR.io is under development, there is only an Android app (in the repo) with o
 ### Point your device at the GIF. (Must have the app installed!)
 
 ![](GitHubExample.gif)
+
+## Ideas
+
+- [x] Turn a file into QR codes
+- [x] Turn those QR codes into readable files
+- [x] Create Android app to show off the technology
+- [ ] Create an iOS app to show crosscompatability
+- [ ] Convert the app into an API for others to use in their projects
+- [ ] Enable bi-directional communication
+- [ ] Speed up data transfer
+  - [ ] Use bi-directional communication to discover fastest method of transfer
+  - [ ] Drop frames that were successful so they are not looped again
+  - [ ] Use raw pixel data for data transfer and use QR codes as an easy/fast way to talk
