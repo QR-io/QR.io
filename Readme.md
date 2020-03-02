@@ -19,7 +19,7 @@ As QR.io is under development, there is only an Android app (in the repo) with o
 ## Example
 ### Point your device at the GIF. (Must have the app installed!)
 
-![](GitHubExample.gif)
+![](docs/GitHubExample.gif)
 
 ## Ideas - *No order*
 
