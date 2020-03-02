@@ -103,7 +103,7 @@ class Routines {
             yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 100, out)
             val imageBytes = out.toByteArray()
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
+    }
         fun longToUInt32ByteArray(value: Int): ByteArray {
             val bytes = ByteArray(4)
             bytes[3] = (value and 0xFFFF).toByte()
@@ -111,8 +111,5 @@ class Routines {
             bytes[1] = ((value ushr 16) and 0xFFFF).toByte()
             bytes[0] = ((value ushr 24) and 0xFFFF).toByte()
             return bytes
-
-        }
     }
-
 }
