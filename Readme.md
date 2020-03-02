@@ -21,7 +21,7 @@ As QR.io is under development, there is only an Android app (in the repo) with o
 
 ![](GitHubExample.gif)
 
-## Ideas
+## Ideas - *No order*
 
 - [x] Turn a file into QR codes
 - [x] Turn those QR codes into readable files
