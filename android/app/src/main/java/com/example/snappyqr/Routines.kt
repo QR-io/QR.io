@@ -111,5 +111,6 @@ class Routines {
             bytes[1] = ((value ushr 16) and 0xFFFF).toByte()
             bytes[0] = ((value ushr 24) and 0xFFFF).toByte()
             return bytes
+        }
     }
 }
