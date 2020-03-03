@@ -41,8 +41,7 @@ The device will vibrate when transfer is initiated and completed.
 Please see the issues page for current bugs / features we seek to implement. 
 
 ## Contact
-
-**Trevor Dobbertin** - trevordobbertin(@)gmail.com  
-**Matas Lauzadis** - matas.lauzadis(@)gmail.com  
-**Dimitar Pendurkov** - dimitarpendurkov(@)gmail.com  
-**Tom Reichel** - tom.p.reichel(@)gmail.com
+| [Thomas Reichel](https://www.linkedin.com/in/thomas-reichel-6107b5168/)  | [Trevor Dobbertin](https://www.linkedin.com/in/trevor-dobbertin/)  | [Matas Lauzadis](https://www.linkedin.com/in/matas-lauzadis/) | [Dimitar Pendurkov](https://www.linkedin.com/in/dimitarpendurkov/)
+| ------------- | ------------- | ------------- | ------------- 
+| ![](https://avatars3.githubusercontent.com/u/43631024?s=400)  | ![](https://avatars0.githubusercontent.com/u/16619882?s=400) | ![](https://avatars0.githubusercontent.com/u/30608308?s=400) | ![](https://avatars3.githubusercontent.com/u/47958079?s=400)
+| tom.p.reichel@gmail.com  | trevordobbertin@gmail.com  | matas.lauzadis@gmail.com	| dimitarpendurkov@gmail.com
