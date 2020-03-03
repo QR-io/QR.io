@@ -15,19 +15,13 @@ import java.util.concurrent.TimeUnit
 
 class SendActivity : AppCompatActivity() {
 
-    val fakeData : ByteArray = ByteArray(1000)
 
     var handler:Handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        for (x in 0..fakeData.size-1) {
-            fakeData[x] = x.toByte()
-        }
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send)
-        val qr_string = intent.getStringExtra("qr_string")
         val uri = intent.getStringExtra("uri")
 
         val data : ByteArray = readBytes(applicationContext, Uri.parse(uri))
@@ -40,20 +34,19 @@ class SendActivity : AppCompatActivity() {
          */
         var counter = 0
         val bytesPerQR = 100
+        val frames = kotlin.math.ceil(data.size/bytesPerQR.toDouble()).toInt()
         val myImage: ImageView = findViewById<View>(R.id.imageView) as ImageView
         val flashqrs : () -> Unit = {
             counter+=1
-            counter = counter.rem(data.size/bytesPerQR)
-            val qr = Routines.getNthQRCode(counter,data,bytesPerQR,
-                kotlin.math.ceil(data.size / bytesPerQR.toDouble()).toInt())
+            counter = counter.rem(frames)
+            val qr = Routines.getNthQRCode(counter,data,bytesPerQR,frames)
             handler.post {
                 myImage.setImageBitmap(qr)
             }
         }
         Log.d("DATASIZE", data.size.toString())
         val exec = Executors.newSingleThreadScheduledExecutor()
-        exec.scheduleAtFixedRate(flashqrs,100,64, TimeUnit.MILLISECONDS)
-        //exec.
+        exec.scheduleAtFixedRate(flashqrs,100,500, TimeUnit.MILLISECONDS)
 
     }
     @Throws(IOException::class)
