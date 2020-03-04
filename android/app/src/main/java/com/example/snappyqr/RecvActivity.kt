@@ -19,7 +19,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.Executor
 
 
 class RecvActivity : AppCompatActivity() {
@@ -52,9 +51,17 @@ class RecvActivity : AppCompatActivity() {
 
         var dataMap = TreeMap<Int,ByteArray>()
 
-        val executor : Executor
+        // flag to indicate that analyzer shouldn't run
+        // since the executor doesn't actually stop running until the UI
+        // updates and the current activity is stopped.
+        var done = false
 
         val analyzer = ImageAnalysis.Analyzer { imageProxy: ImageProxy, i: Int ->
+
+            if (done) {
+                return@Analyzer
+            }
+
             val bitmap = imageProxy.toBitmap()
             //TODO(There may end up being more than 1 QR spotted. Write logic to grab the correct one.)
 
@@ -93,6 +100,7 @@ class RecvActivity : AppCompatActivity() {
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
 
                     if (dataMap.size == dataLength.toInt()){
+                        done = true
                         makeFileFromByteArrays(dataMap)
                     }
 
@@ -106,7 +114,7 @@ class RecvActivity : AppCompatActivity() {
             }
             //Log.v("SnappyQR",""+barcodes.size())
         }
-        executor = Routines.setupCamAnalysis(this,analyzer)
+        Routines.setupCamAnalysis(this,analyzer)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
