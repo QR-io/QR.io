@@ -147,8 +147,12 @@ class RecvActivity : AppCompatActivity() {
             }
         }
 
-        val theFile = File(getExternalFilesDir(null),filename.toString())
-        Log.d("FILENAME", filename.toString())
+
+        Log.d("FILENAME_RAW", filename.toString())
+        Log.d("FILENAME", String(filename))
+
+        val theFile = File(getExternalFilesDir(null),String(filename))
+
         theFile.createNewFile()
         try {
             fos = FileOutputStream(theFile)
