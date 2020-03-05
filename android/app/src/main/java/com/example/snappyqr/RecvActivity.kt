@@ -95,7 +95,7 @@ class RecvActivity : AppCompatActivity() {
                     Log.d("INDEX", frameIndex)
                     Log.d("LENGTH", dataLength)
                     Log.d("DATA", byteData)
-                    Log.d("4TH_THING", data[3])
+//                    Log.d("4TH_THING", data[3])
                     var size = dataMap.size
                     Log.d("FRAMES_I_HAVE", "$size")
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
@@ -127,8 +127,8 @@ class RecvActivity : AppCompatActivity() {
         var nullTermLocation: Pair<Int, Int> = Pair(0,0)
 
         for ((frame, info) in data) {
-            if (info.contains(("/u0000").toByte())) {
-                nullTermLocation = Pair(frame, info.indexOf(("/u0000").toByte()))
+            if (info.contains(('\u0000').toByte())) {
+                nullTermLocation = Pair(frame, info.indexOf(('\u0000').toByte()))
             }
         }
 
@@ -148,6 +148,7 @@ class RecvActivity : AppCompatActivity() {
         }
 
         val theFile = File(getExternalFilesDir(null),filename.toString())
+        Log.d("FILENAME", filename.toString())
         theFile.createNewFile()
         try {
             fos = FileOutputStream(theFile)
