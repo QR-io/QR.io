@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                     // send to app settings if permission is denied permanently
                     val intent = Intent()
                     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    val uri = Uri.fromParts("package", getPackageName(), null)
+                    val uri = Uri.fromParts("package", packageName, null)
                     intent.data = uri
                     startActivity(intent)
                 })

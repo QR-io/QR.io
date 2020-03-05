@@ -24,7 +24,11 @@ class SendActivity : AppCompatActivity() {
         setContentView(R.layout.activity_send)
         val uri = intent.getStringExtra("uri")
 
-        val data : ByteArray = readBytes(applicationContext, Uri.parse(uri))
+        val filename = Uri.parse(uri).lastPathSegment.toString()
+        var data : ByteArray = readBytes(applicationContext, Uri.parse(uri))
+
+        data += filename.toByteArray()
+        data += "/u0000".toByteArray()
 
         /*
         val myBitmap: Bitmap = QRCode.from(qr_string).bitmap()

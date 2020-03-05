@@ -82,7 +82,7 @@ class RecvActivity : AppCompatActivity() {
                     var dataLength = data[1].trim()
                     var byteData = data[2]
                     for (x in 3 until data.size) {
-                        byteData = byteData + data[x]
+                        byteData += data[x]
                     }
 
                    /*if (byteData.length < 100 && frameIndex.toInt()!=dataLength.toInt()-1) {
@@ -95,6 +95,7 @@ class RecvActivity : AppCompatActivity() {
                     Log.d("INDEX", frameIndex)
                     Log.d("LENGTH", dataLength)
                     Log.d("DATA", byteData)
+                    Log.d("4TH_THING", data[3])
                     var size = dataMap.size
                     Log.d("FRAMES_I_HAVE", "$size")
                     dataMap[frameIndex.toInt()] = byteData.toByteArray()
@@ -119,9 +120,34 @@ class RecvActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun makeFileFromByteArrays(data: TreeMap<Int, ByteArray>) {
-        //TODO Send 100 in the intent. This number is BytesPerQR in SendActivity.
+        //TODO Send 100 in the headers. This number is BytesPerQR in SendActivity.
         var fos: FileOutputStream? = null
-        val theFile = File(getExternalFilesDir(null),"THEFILE.txt")
+
+        //TODO Don't force null. Will also fix the let used later.
+        var nullTermLocation: Pair<Int, Int> = Pair(0,0)
+
+        for ((frame, info) in data) {
+            if (info.contains(("/u0000").toByte())) {
+                nullTermLocation = Pair(frame, info.indexOf(("/u0000").toByte()))
+            }
+        }
+
+        val location1: Pair<Int, Int> = Pair(0,0)
+        val location2: Pair<Int, Int> = Pair(nullTermLocation.first, nullTermLocation.second)
+
+        //Filename size will always be less than 100 * the amount of frames that contain filename info.
+        //TODO Change this to be exact
+        var filename = ByteArray(100 * location2.first)
+
+        for ((frameiter, info) in data) {
+            if (frameiter < location2.first) {
+                filename += info
+            } else if (frameiter == location2.first){
+                filename += info.copyOfRange(0,location2.second)
+            }
+        }
+
+        val theFile = File(getExternalFilesDir(null),filename.toString())
         theFile.createNewFile()
         try {
             fos = FileOutputStream(theFile)

@@ -76,7 +76,6 @@ class Routines {
         }
 
         fun getNthQRCode(n: Int, file: ByteArray, databytes: Int, totalFrames: Int): Bitmap {
-            //val databytes = 10
             var dataString: String = String(
                 file.sliceArray(
                     (n * databytes)..min(

@@ -33,18 +33,12 @@ class PickerActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        //Bunch of logging stuff that help find issues.
-//        Log.d("RESULT", resultCode.toString())
-//        Log.d("REQUEST", requestCode.toString())
-//        Log.d("DATA", data.toString())
         if (requestCode != requestCode || requestCode != PICKER_REQUEST_CODE) {
             return
         }
         val intent = Intent(Intent(this, SendActivity::class.java))
         intent.putExtra("uri", data?.data.toString())
         intent.putExtra("qr_string", "google.com")
-        //More logging to see what is actually in data.
-//        Log.d("DATA", data?.data.toString())
         startActivity(intent)
     }
     @RequiresApi(Build.VERSION_CODES.Q)
