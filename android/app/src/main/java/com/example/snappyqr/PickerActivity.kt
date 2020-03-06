@@ -33,49 +33,12 @@ class PickerActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        //Bunch of logging stuff that help find issues.
-//        Log.d("RESULT", resultCode.toString())
-//        Log.d("REQUEST", requestCode.toString())
-//        Log.d("DATA", data.toString())
         if (requestCode != requestCode || requestCode != PICKER_REQUEST_CODE) {
             return
         }
         val intent = Intent(Intent(this, SendActivity::class.java))
         intent.putExtra("uri", data?.data.toString())
         intent.putExtra("qr_string", "google.com")
-        //More logging to see what is actually in data.
-//        Log.d("DATA", data?.data.toString())
         startActivity(intent)
-    }
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun importURI(uri: Uri){
-        val fileName: String = getFileName(uri)
-        val tempFile: OutputStream? = null
-        val fileCopy: OutputStream? = tempFile?.let { copyToTempFile(uri, it) }
-    }
-    private fun getFileName(uri: Uri): String{
-        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
-
-        if (cursor != null) {
-            if (cursor.count <= 0) {
-                cursor.close()
-                throw IllegalArgumentException("Can't obtain file name, cursor is empty")
-            }
-        }
-
-        cursor?.moveToFirst()
-
-        return cursor?.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)) ?: cursor?.close().toString()
-    }
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun copyToTempFile(uri: Uri, tempFile: OutputStream): OutputStream {
-        // Obtain an input stream from the uri
-        val inputStream = contentResolver.openInputStream(uri)
-            ?: throw IOException("Unable to obtain input stream from URI")
-
-        // Copy the stream to the temp file
-        FileUtils.copy(inputStream, tempFile)
-
-        return tempFile
     }
 }

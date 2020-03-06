@@ -24,14 +24,16 @@ class SendActivity : AppCompatActivity() {
         setContentView(R.layout.activity_send)
         val uri = intent.getStringExtra("uri")
 
-        val data : ByteArray = readBytes(applicationContext, Uri.parse(uri))
+        val fileLocation = Uri.parse(uri).lastPathSegment.toString()
+        val slashIndex = fileLocation.lastIndexOf("/")
 
-        /*
-        val myBitmap: Bitmap = QRCode.from(qr_string).bitmap()
-        val myImage: ImageView = findViewById<View>(R.id.imageView) as ImageView
-        myImage.setImageBitmap(myBitmap)
+        val filename = fileLocation.substring(slashIndex)
 
-         */
+        Log.d("SENT_FILENAME", filename)
+        var data : ByteArray = readBytes(applicationContext, Uri.parse(uri))
+
+        data = filename.toByteArray() + '\u0000'.toByte() + data
+
         var counter = 0
         val bytesPerQR = 100
         val frames = kotlin.math.ceil(data.size/bytesPerQR.toDouble()).toInt()
