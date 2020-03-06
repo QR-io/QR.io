@@ -1,13 +1,27 @@
 package com.example.snappyqr
 
 import android.accessibilityservice.GestureDescription
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import android.util.Size
 import android.view.TextureView
+import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.camera.core.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.Executors
 import net.glxn.qrgen.android.QRCode
@@ -126,6 +140,18 @@ class Routines {
             return bytes
 
         }
+
+       fun disableButtons(act:Activity) {
+           val toastRestart = { v: View ->
+               Toast.makeText(
+                   act.applicationContext,
+                   "Please grant the app permissions in settings and restart the app.",
+                   Toast.LENGTH_LONG
+               ).show()
+           }
+           act.findViewById<Button>(R.id.send_button).setOnClickListener(toastRestart)
+           act.findViewById<Button>(R.id.receive_button).setOnClickListener(toastRestart)
+       }
     }
 
 }
