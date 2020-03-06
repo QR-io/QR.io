@@ -34,12 +34,6 @@ class SendActivity : AppCompatActivity() {
 
         data = filename.toByteArray() + '\u0000'.toByte() + data
 
-        /*
-        val myBitmap: Bitmap = QRCode.from(qr_string).bitmap()
-        val myImage: ImageView = findViewById<View>(R.id.imageView) as ImageView
-        myImage.setImageBitmap(myBitmap)
-
-         */
         var counter = 0
         val bytesPerQR = 100
         val frames = kotlin.math.ceil(data.size/bytesPerQR.toDouble()).toInt()
