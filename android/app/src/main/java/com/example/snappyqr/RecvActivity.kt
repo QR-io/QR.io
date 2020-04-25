@@ -2,8 +2,11 @@ package com.example.snappyqr
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.*
+import android.provider.DocumentsContract
 import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -11,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.core.util.valueIterator
+import androidx.documentfile.provider.DocumentFile
 import com.example.snappyqr.Routines.Companion.toBitmap
 import com.google.android.gms.vision.Frame
 import com.google.android.gms.vision.barcode.Barcode
@@ -18,50 +22,41 @@ import com.google.android.gms.vision.barcode.BarcodeDetector
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.ByteBuffer
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.reflect.typeOf
 
 
 class RecvActivity : AppCompatActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
+
+    private val PICKER_REQUEST_CODE = 6006
+    private lateinit var DOCUMENT_TREE : Uri // User-chosen directory to place the file
+
+    @RequiresApi(Build.VERSION_CODES.O) // For Vibes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val bcd = BarcodeDetector.Builder(applicationContext)
-            .setBarcodeFormats(Barcode.QR_CODE).build()
-
         setContentView(R.layout.activity_recv)
 
-        //Routines.setupCamViewer(this, findViewById(R.id.textureView))
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, PICKER_REQUEST_CODE)
 
-        val qr_image = findViewById<ImageView>(R.id.qr_image)
-
-        val imgResId = R.drawable.ic_launcher_background
-        var resId = imgResId
-        qr_image.setImageResource(imgResId)
-
-        /*val button = findViewById<Button>(R.id.switch_image)
-        button?.setOnClickListener {
-            resId = if (resId == R.drawable.ic_launcher_background) R.mipmap.ic_launcher else R.drawable.ic_launcher_background
-            qr_image.setImageResource(resId)
-        }*/
-
+        val bcd = BarcodeDetector.Builder(applicationContext).setBarcodeFormats(Barcode.QR_CODE).build()
         if (!bcd.isOperational) {
-            Toast.makeText(applicationContext,"QR code reader could not be instantiated.",Toast.LENGTH_LONG)
+            Toast.makeText(applicationContext,"QR code reader could not be instantiated.",Toast.LENGTH_LONG).show()
         }
 
-        var dataMap = TreeMap<Int,ByteArray>()
+        val qrImage = findViewById<ImageView>(R.id.qr_image)
+        val imgResId = R.drawable.ic_launcher_background
+        qrImage.setImageResource(imgResId)
 
-        // flag to indicate that analyzer shouldn't run
-        // since the executor doesn't actually stop running until the UI
-        // updates and the current activity is stopped.
-        var done = false
 
-        val analyzer = ImageAnalysis.Analyzer { imageProxy: ImageProxy, i: Int ->
+        val dataMap = TreeMap<Int,ByteArray>()
+        var fileName: String = ""
 
-            if (done) {
-                return@Analyzer
-            }
-
+        val analyzer = ImageAnalysis.Analyzer { imageProxy: ImageProxy, rotationDegrees: Int ->
             val bitmap = imageProxy.toBitmap()
             //TODO(There may end up being more than 1 QR spotted. Write logic to grab the correct one.)
 
@@ -69,121 +64,91 @@ class RecvActivity : AppCompatActivity() {
 
             if (barcodes.size() > 0) {
                 for (barcode in barcodes.valueIterator()){
-                    var frame = barcode.rawValue
-                    Log.d("SnappyQR",frame)
-                    var data = frame.split(",")
+                    val frame = barcode.rawValue
+                    val frameByteBuffer: ByteBuffer = ByteBuffer.wrap(frame.toByteArray())
 
-                    /*if (data.size<3) {
-                        // this frame is corrupt. skipping.
-                        continue
-                    }*/
+                    val frameIndex: Int = frameByteBuffer.getInt()
+                    frameByteBuffer.get()  // Skip the Null Terminator
+                    val totalFrames: Int = frameByteBuffer.getInt()
+                    frameByteBuffer.get()
 
-                    var frameIndex = data[0].trim()
-                    var dataLength = data[1].trim()
-                    var byteData = data[2]
-                    for (x in 3 until data.size) {
-                        byteData = byteData + data[x]
+                    if (frameIndex == 0) {
+                        var fileNameByteArray: ByteArray = byteArrayOf()
+
+                        while (true) {
+                            val b: Byte = frameByteBuffer.get()
+                            if (b == '\u0000'.toByte()){ break }
+                            else
+                                fileNameByteArray += b
+                        }
+                        fileName = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(fileNameByteArray)).toString()
+                        Log.d("OVERWRITE", fileName)
+                    }
+                    var data: ByteArray = frameByteBuffer.array()
+                    data = data.copyOfRange(frameByteBuffer.arrayOffset() + frameByteBuffer.position(), frameByteBuffer.arrayOffset() + frameByteBuffer.limit())
+
+                    Log.d("frameIndex", frameIndex.toString())
+                    Log.d("totalFrames", totalFrames.toString())
+                    Log.d("data", String(data))
+
+                    val quarter: Int = kotlin.math.ceil(totalFrames.toDouble() / 4).toInt()
+
+                    val dataMapSize = dataMap.size
+                    Log.d("dataMapSize", dataMapSize.toString())
+                    dataMap[frameIndex] = data
+
+                    if (dataMap.size == totalFrames){
+                        makeFileFromByteArrays(dataMap, fileName)
+                        return@Analyzer
+                    }
+//
+                    if (dataMap.size % quarter == 0 && dataMap.size != totalFrames){
+                        val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                        val numVibes = dataMap.size / quarter
+                        val timings: ArrayList<Long>? = arrayListOf()
+                        for (i in 1..numVibes){
+                            timings?.add(150) // Off
+                            timings?.add(150) // On
+                        }
+                        v.vibrate(VibrationEffect.createWaveform(timings?.toLongArray(), -1))
                     }
 
-                   /*if (byteData.length < 100 && frameIndex.toInt()!=dataLength.toInt()-1) {
-                        // QR code is truncated.
-                        // This seems to be a regular failure mode, where it doesn't read the
-                        // entire QR code.
-                        continue
-                    }*/
-
-                    Log.d("INDEX", frameIndex)
-                    Log.d("LENGTH", dataLength)
-                    Log.d("DATA", byteData)
-                    var size = dataMap.size
-                    Log.d("FRAMES_I_HAVE", "$size")
-                    dataMap[frameIndex.toInt()] = byteData.toByteArray()
-
-                    if (dataMap.size == dataLength.toInt()){
-                        done = true
-                        makeFileFromByteArrays(dataMap)
-                    }
-
-//                    if (barcode != null) {
-//                        Log.d("RAWVALUE", barcode.rawValue)
-//                    } else {
-//                        Log.d("ELSE", "NULL")
-//                    }
                 }
-//                Log.d("RAWVALUE", barcodes[0].toString())
             }
-            //Log.v("SnappyQR",""+barcodes.size())
         }
         Routines.setupCamAnalysis(this,analyzer)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun makeFileFromByteArrays(data: TreeMap<Int, ByteArray>) {
+    private fun makeFileFromByteArrays(data: TreeMap<Int, ByteArray>, fileName: String) {
         //TODO Send 100 in the intent. This number is BytesPerQR in SendActivity.
-        var fos: FileOutputStream? = null
-        val theFile = File(getExternalFilesDir(null),"THEFILE.txt")
-        theFile.createNewFile()
-        try {
-            fos = FileOutputStream(theFile)
-            //val baos = ByteArrayOutputStream()
-            // Put data in your baos
-            for (dataPiece in data.values) {
-                //print(dataPiece)
-                fos.write(dataPiece)
-            }
-        } catch (ioe: IOException) { // Handle exception here
-            ioe.printStackTrace()
-        } finally {
-            Log.d("FINALLY", "Finally closing.")
-            fos?.flush()
-            fos?.close()
-            vibrateWhenDone()
-            intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+
+        val pickedDirectory: DocumentFile? = DocumentFile.fromTreeUri(this, DOCUMENT_TREE)
+        var file: DocumentFile? = pickedDirectory?.findFile(fileName)
+        if (file == null) {
+            file = pickedDirectory?.createFile(MimeTypeMap.getFileExtensionFromUrl(fileName), fileName)
         }
-//        if(!isExternalStorageWritable()){
-//            Log.d("PERMS", "NOT writable!!!!!")
-//        }else {
-//            val outputStream = ByteArrayOutputStream(data.lastKey() * 100)
-//
-//            val location = "THEFILE.txt"
-//
-//            val outfile = openFileOutput(location, Context.MODE_APPEND)
-//            Log.d("FILECREATION", "FILE IS BEING CREATED!!!!!!!!!!!!!!!!!!")
-//
-//            for (dataPiece in data.values) {
-//                outfile.write(dataPiece)
-//                outputStream.write(dataPiece)
-//            }
-//            outfile.flush()
-//            outputStream.flush()
-//            outfile.close()
-//            outputStream.close()
-//        }
-    }
-    fun isExternalStorageWritable(): Boolean {
-        val state = Environment.getExternalStorageState()
-        return Environment.MEDIA_MOUNTED == state
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun vibrateWhenDone(){
+        Log.d("fileName", fileName)
+        val fos = contentResolver.openOutputStream(file?.uri!!)
+
+        for (dataPiece in data.values) {
+            fos?.write(dataPiece)
+        }
+        fos?.flush()
+        fos?.close()
         val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        // Vibrate for 500 milliseconds
-        // Vibrate for 500 milliseconds
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else { //deprecated in API 26
-            v.vibrate(VibrationEffect.createOneShot(500, 10))
-        }
+        v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+        super.finish()
+        return
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) { // Catch the DirectoryFile the user picks
+        super.onActivityResult(requestCode, resultCode, data)
+        if(data == null){
+            Log.d("DOCUMENT_TREE", "NO FOLDER CHOSEN")
+            super.finish()
+            return
+        }
+        DOCUMENT_TREE = data.data!!
+    }
 }
-
-/*
- {
-                val f = Frame.Builder().setBitmap(it.bitmap).build()
-                val qr = bcd.detect(f)
-                Log.v("SnappyQR","found " + qr.size() + " codes")
- }
- */
-

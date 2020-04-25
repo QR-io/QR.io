@@ -15,8 +15,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-//import com.google.android.gms.vision.barcode.Barcode
-//import com.google.android.gms.vision.barcode.BarcodeDetector
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,12 +30,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, RecvActivity::class.java))
         }
 
-
         askForPermissions(Manifest.permission.CAMERA)
         askForPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 
     }
-
 
     // permission handling code taken with credit to https://handyopinion.com/ask-runtime-permission-in-kotlin-android/
     private fun isPermissionsAllowed(perm:String): Boolean {
@@ -59,13 +55,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,permissions: Array<String>,grantResults: IntArray) {
-        //PackageManager.permission_granted
         for (x in grantResults) {
             if (x!=PackageManager.PERMISSION_GRANTED) {
                 // UH-OH. At least one permission we requested was not granted. We'll disable the buttons.
                 disableButtons()
-
-
             }
         }
     }

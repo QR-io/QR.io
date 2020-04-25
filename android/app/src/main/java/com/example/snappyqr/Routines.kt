@@ -12,44 +12,13 @@ import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.Executors
 import net.glxn.qrgen.android.QRCode
 import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import java.util.concurrent.Executor
 
 
 class Routines {
 
     companion object {
-
-        fun setupCamViewer(a: LifecycleOwner, j: TextureView) {
-            // modified example code from https://codelabs.developers.google.com/codelabs/camerax-getting-started/
-
-            // Create configuration object for the viewfinder use case
-            val previewConfig = PreviewConfig.Builder().apply {
-                setLensFacing(CameraX.LensFacing.FRONT)
-                setTargetResolution(Size(640, 480))
-            }.build()
-
-
-            // Build the viewfinder use case
-            val preview = Preview(previewConfig)
-
-            // Every time the viewfinder is updated, recompute layout
-            preview.setOnPreviewOutputUpdateListener {
-
-                // To update the SurfaceTexture, we have to remove it and re-add it
-                val parent = j.parent as ViewGroup
-                parent.removeView(j)
-                parent.addView(j, 0)
-
-                j.surfaceTexture = it.surfaceTexture
-
-            }
-            // Bind use cases to lifecycle
-            // If Android Studio complains about "this" being not a LifecycleOwner
-            // try rebuilding the project or updating the appcompat dependency to
-            // version 1.1.0 or higher.
-            CameraX.bindToLifecycle(a, preview)
-        }
-
         fun setupCamAnalysis(a: LifecycleOwner, hook: ImageAnalysis.Analyzer): Executor {
             val imageAnalysisConfig = ImageAnalysisConfig.Builder().apply {
                 setLensFacing(CameraX.LensFacing.FRONT)
@@ -75,22 +44,44 @@ class Routines {
             return if (a < b) a else b
         }
 
-        fun getNthQRCode(n: Int, file: ByteArray, databytes: Int, totalFrames: Int): Bitmap {
-            //val databytes = 10
-            var dataString: String = String(
+        @ExperimentalStdlibApi
+        fun getNthQRCode(n: Int, file: ByteArray, databytes: Int, totalFrames: Int, fileName: String): Bitmap {
+            var dataString: ByteArray =
                 file.sliceArray(
                     (n * databytes)..min(
                         (n + 1) * databytes - 1,
                         file.size - 1
                     )
                 )
-            )
-            val dataStringHeader = "$n,$totalFrames,"
+
+            val frameNumArray: ByteArray =  ByteBuffer.allocate(4).putInt(n).array() + '\u0000'.toByte() // Current Frame Index, null terminated
+            val totalFramesArray: ByteArray = ByteBuffer.allocate(4).putInt(totalFrames).array() + '\u0000'.toByte() // Number of Total Frames, null terminated
+
+            // Header Logging
+            Log.d("frameNumArrayLength", frameNumArray.size.toString())
+            Log.d("frameNumArray", ByteBuffer.wrap(frameNumArray).getInt().toString())
+            Log.d("totalFramesArrayLength", totalFramesArray.size.toString())
+            Log.d("totalFramesArray", ByteBuffer.wrap(totalFramesArray).getInt().toString())
+
+            // Create the Header
+            var dataStringHeader = frameNumArray + totalFramesArray
+
+            if(n == 0){
+                val fileNameArray: ByteArray = fileName.toByteArray() + '\u0000'.toByte()
+                Log.d("fileNameArrayLength", fileNameArray.size.toString())
+                Log.d("fileNameArray", String(fileNameArray))
+                dataStringHeader += fileNameArray
+            }
+
+            // Data Logging
+            Log.d("dataStringRaw", String(dataString))
+            Log.d("dataStringRawSize", dataString.size.toString())
             dataString = dataStringHeader + dataString
+            Log.d("dataStringHeader", String(dataStringHeader))
+            Log.d("dataStringWithHeader", String(dataString))
+            Log.d("dataStringWithHeader", dataString.size.toString())
 
-            Log.d("nBYTES", dataStringHeader)
-            return QRCode.from(dataString).bitmap()
-
+            return QRCode.from(String(dataString)).bitmap()
         }
 
         // snippet provided by
